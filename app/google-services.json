@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "420608764229",
+    "firebase_url": "https://smart-cloud-storage.firebaseio.com",
+    "project_id": "smart-cloud-storage",
+    "storage_bucket": "smart-cloud-storage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420608764229:android:95ae76b507a330607a762c",
+        "android_client_info": {
+          "package_name": "com.example.smartcloudstorage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "420608764229-j7gihfl3mmne8ngil903skr64f3lp2pf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_05_VMePCJ9pqGejoGtfRmoEKaoe96e8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420608764229-j7gihfl3mmne8ngil903skr64f3lp2pf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
