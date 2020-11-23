@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -50,10 +51,13 @@ public class Register extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        /*
         if(fAuth.getCurrentUser()!=null){
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             finish();
         }
+
+        */
 
         mRegistrationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,12 +80,36 @@ public class Register extends AppCompatActivity {
                     return;
                 }
 
+                RegisterRegexApply r = new RegisterRegexApply();
+                if(!r.validateEmail(email)){
+                    mEmail.setError("Email is invalid!");
+                    return;
+                }
+                if(!r.validatePassword(password)){
+                    mPassword.setError("Password is invalid!");
+                    return;
+                }
+
                 progressBar.setVisibility(view.VISIBLE);
 
                 fAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+
+                            FirebaseUser fuser = fAuth.getCurrentUser();
+                            fuser.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(Register.this, "Verification Email Has been Sent.", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("TAG", "onFailure: Email not sent " + e.getMessage());
+                                }
+                            });
+
                             Toast.makeText(Register.this,"user created",Toast.LENGTH_SHORT).show();
 
                             Map<String,Object> user = new HashMap<>();
@@ -103,7 +131,7 @@ public class Register extends AppCompatActivity {
                                 }
                             });
 
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            startActivity(new Intent(getApplicationContext(),Login.class));
                         }
                         else{
                             Toast.makeText(Register.this,"Error! "+task.getException().getMessage(),Toast.LENGTH_SHORT).show();

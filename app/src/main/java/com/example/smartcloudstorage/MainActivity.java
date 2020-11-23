@@ -3,6 +3,7 @@ package com.example.smartcloudstorage;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,21 +12,36 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 
+import java.io.File;
 import java.io.IOException;
+import java.security.Permission;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     //a constant to track the file chooser intent
@@ -36,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonUpload;
     private Button downloadBtn;
 
+    private static String downloadurl="";
     //ImageView
     private ImageView imageView;
 
@@ -47,19 +64,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuth fAuth;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
+        //testing
+        //startActivity(new Intent(getApplicationContext(),DownloadFiles.class));
+
 
         //getting views from layout
         buttonChoose = (Button) findViewById(R.id.buttonChoose);
         buttonUpload = (Button) findViewById(R.id.buttonUpload);
-        downloadBtn = (Button) findViewById(R.id.downloadBtn);
 
         imageView = (ImageView) findViewById(R.id.imageView);
+
 
         //attaching listener
         buttonChoose.setOnClickListener(this);
@@ -67,20 +89,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         fAuth = FirebaseAuth.getInstance();
 
-        if(fAuth.getCurrentUser()==null){
+        if(fAuth.getCurrentUser()==null || (!fAuth.getCurrentUser().isEmailVerified())){
             startActivity(new Intent(getApplicationContext(),Login.class));
             finish();
+        }else{
+            askPermission();
         }
 
 
     }
 
-    public void logout(View view){
-        FirebaseAuth.getInstance().signOut();
-        startActivity(new Intent(getApplicationContext(),Login.class));
-        finish();
+    private void askPermission() {
+
+        PermissionListener permissionListener = new PermissionListener(){
+
+            @Override
+            public void onPermissionGranted() {
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> deniedPermissions) {
+            }
+        };
+
+        TedPermission.with(MainActivity.this)
+                .setPermissionListener(permissionListener)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .check();
 
     }
+
 
     private void showFileChooser() {
         Intent intent = new Intent();
@@ -98,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 imageView.setImageBitmap(bitmap);
+                imageView.setVisibility(View.VISIBLE);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -115,7 +154,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setTitle("Uploading");
             progressDialog.show();
 
-            StorageReference riversRef = storageReference.child(filePath.getLastPathSegment());
+            //testing
+
+            EditText fileName = findViewById(R.id.fileNameToBeSaved);
+            String name = fileName.getText().toString().trim();
+            StorageReference riversRef = storageReference.child(fAuth.getCurrentUser().getEmail()).child(name);
+            String finalName = name;
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -126,6 +170,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                             //and displaying a success toast
                             Toast.makeText(getApplicationContext(), "File Uploaded ", Toast.LENGTH_LONG).show();
+
+                            Map<String,Object> user = new HashMap<>();
+
+                            user.put("name",riversRef.getName());
+                            user.put("link","");
+
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference documentReference = db.collection(fAuth.getCurrentUser().getEmail()).document();
+
+                            documentReference.set(user);
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -157,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+   /*
     public void download(View view){
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference imageRef = storage.getReference().child("light.jpg");
@@ -177,6 +233,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    */
+
 
     @Override
     public void onClick(View view) {
@@ -192,5 +250,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.logout_id:
+                fAuth.signOut();
+                startActivity(new Intent(getApplicationContext(),Login.class));
+                finish();
+                break;
+            default:
+                Toast.makeText(MainActivity.this,"Logout not button",Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return true;
+    }
+
+    public void showUploads(View view){
+        startActivity(new Intent(getApplicationContext(),DownloadFiles.class));
+        finish();
+    }
 
 }
+
+
+
+
+
+
+
+
