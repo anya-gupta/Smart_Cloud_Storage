@@ -13,4 +13,6 @@
     <color name="cardview2">#303F9F</color>
     <color name="cardview3">#D5E2E4</color>
     <color name="add_files">#636668</color>
+    <color name="deletecolor">#EE3218</color>
+    <color name="deletecolor1">#F57438</color>
 </resources>

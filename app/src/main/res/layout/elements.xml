@@ -11,48 +11,63 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         app:cardBackgroundColor="@color/C7EAEB"
+        app:cardCornerRadius="8dp"
         app:cardElevation="7dp">
 
         <LinearLayout
-            android:layout_width="1050px"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="43dp"
+            android:background="@color/cardview3"
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight=".75"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="700px"
-                    android:layout_height="100px"
-                    android:paddingLeft="25px"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15px"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
                     android:text="Name"
                     android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/link"
-                    android:layout_width="700px"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="10px"
                     android:text="Download Link"
                     android:textSize="8sp"
-                    android:visibility="invisible" />
+                    android:visibility="gone" />
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/down"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="80px"
-                android:layout_height="wrap_content"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight=".25"
-                android:background="@color/FF8287B6"
                 android:elevation="7dp"
                 android:text="Down"
-                app:backgroundTint="@color/FF8287B6" />
+                android:textSize="28px"/>
+
+            <Button
+                android:id="@+id/delete"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight=".25"
+                android:elevation="7dp"
+                android:text="Delete"
+                android:textSize="24px"
+                android:textColor="@color/deletecolor"
+                />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

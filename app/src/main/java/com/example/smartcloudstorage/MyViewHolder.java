@@ -14,13 +14,14 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
     TextView mName;
     TextView mLink;
     Button mDownload;
+    Button mDelete;
     public MyViewHolder(@NonNull View itemView) {
         super(itemView);
 
         mName=itemView.findViewById(R.id.name);
         mLink=itemView.findViewById(R.id.link);
         mDownload=itemView.findViewById(R.id.down);
-
+        mDelete=itemView.findViewById(R.id.delete);
 
 
     }
