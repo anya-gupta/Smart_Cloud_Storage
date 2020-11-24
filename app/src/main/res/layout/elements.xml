@@ -53,8 +53,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:elevation="7dp"
-                android:text="Down"
-                android:textSize="28px"/>
+                android:foreground="@drawable/ic_baseline_cloud_download_24"
+                android:textColor="@color/file_choose_background"
+                android:textSize="20sp" />
 
             <Button
                 android:id="@+id/delete"
@@ -63,10 +64,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:elevation="7dp"
-                android:text="Delete"
-                android:textSize="24px"
+                android:foreground="@android:drawable/ic_menu_delete"
                 android:textColor="@color/deletecolor"
-                />
+                android:textSize="26px" />
 
         </LinearLayout>
 
