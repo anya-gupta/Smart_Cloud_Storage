@@ -17,4 +17,4 @@
   
   Download google.jason file in App file of the project.
   
-  Run the project.
+  Run the project..
